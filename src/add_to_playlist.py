@@ -38,7 +38,6 @@ print(f"Playlist: {playlist['name']}")
 end_date = (datetime.now() - timedelta(days=datetime.now().weekday() + 1)).replace(
     hour=0, minute=0, second=0, microsecond=0
 )
-end_date = datetime.now()  # DEBUG
 start_date = end_date - timedelta(weeks=1)
 
 print(f"Getting songs from {start_date} to {end_date}...")
