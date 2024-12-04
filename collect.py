@@ -24,7 +24,7 @@ sp = spotipy.Spotify(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
         redirect_uri=REDIRECT_URI,
-        scope="user-read-recently-played",
+        scope="user-read-recently-played playlist-modify-private",
     )
 )
 
@@ -56,6 +56,7 @@ def main():
                 name=track["track"]["name"],
                 album_id=album.id,
                 spotify_id=track["track"]["id"],
+                duration=track["track"]["duration_ms"],
             )
             song.save(session)
 

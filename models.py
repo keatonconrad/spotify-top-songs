@@ -43,6 +43,7 @@ class Song(BaseModel):
     name = Column(String, nullable=False)
     album_id = Column(Integer, ForeignKey("album.id"), nullable=False)
     spotify_id = Column(String, unique=True, nullable=False)
+    duration = Column(Integer, nullable=True)
 
     artists = relationship("Artist", secondary=song_artists, backref="songs")
 
