@@ -8,8 +8,9 @@ song_artists = Table(
     "song_artists",
     Base.metadata,
     Column("song_id", Integer, ForeignKey("song.id"), primary_key=True),
-    Column("artist_id", Integer, ForeignKey("artist.id"), primary_key=True)
+    Column("artist_id", Integer, ForeignKey("artist.id"), primary_key=True),
 )
+
 
 class BaseModel(Base):
     __abstract__ = True
@@ -27,6 +28,7 @@ class BaseModel(Base):
         session.add(self)
         session.commit()
 
+
 class Album(BaseModel):
     __tablename__ = "album"
     name = Column(String, nullable=False)
@@ -34,6 +36,7 @@ class Album(BaseModel):
     image = Column(String, nullable=True)
 
     songs = relationship("Song", backref="album")
+
 
 class Song(BaseModel):
     __tablename__ = "song"
@@ -43,10 +46,12 @@ class Song(BaseModel):
 
     artists = relationship("Artist", secondary=song_artists, backref="songs")
 
+
 class Artist(BaseModel):
     __tablename__ = "artist"
     name = Column(String, nullable=False)
     spotify_id = Column(String, unique=True, nullable=False)
+
 
 class Play(BaseModel):
     __tablename__ = "play"

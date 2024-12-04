@@ -19,12 +19,15 @@ Session = sessionmaker(bind=engine)
 
 Base.metadata.create_all(engine)
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET,
-    redirect_uri=REDIRECT_URI,
-    scope="user-read-recently-played"
-))
+sp = spotipy.Spotify(
+    auth_manager=SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        scope="user-read-recently-played",
+    )
+)
+
 
 def main():
     recently_played_tracks = sp.current_user_recently_played(limit=50)
@@ -39,23 +42,37 @@ def main():
             # If it is, we can stop the loop, since the rest of the tracks are older
             break
 
-        album = Album.get_or_create(session, name=track["track"]["album"]["name"], spotify_id=track["track"]["album"]["id"], image=track["track"]["album"]["images"][0]["url"])
+        album = Album.get_or_create(
+            session,
+            name=track["track"]["album"]["name"],
+            spotify_id=track["track"]["album"]["id"],
+            image=track["track"]["album"]["images"][0]["url"],
+        )
 
         # Check if the song is already in the database
         song = session.query(Song).filter_by(spotify_id=track["track"]["id"]).first()
         if not song:
-            song = Song(name=track["track"]["name"], album_id=album.id, spotify_id=track["track"]["id"])
+            song = Song(
+                name=track["track"]["name"],
+                album_id=album.id,
+                spotify_id=track["track"]["id"],
+            )
             song.save(session)
 
             for artist in track["track"]["artists"]:
-                artist = Artist.get_or_create(session, name=artist["name"], spotify_id=artist["id"])
+                artist = Artist.get_or_create(
+                    session, name=artist["name"], spotify_id=artist["id"]
+                )
                 song.artists.append(artist)
 
-        print(f"Played {song.name} by {', '.join([artist.name for artist in song.artists])} at {played_at}")
+        print(
+            f"Played {song.name} by {', '.join([artist.name for artist in song.artists])} at {played_at}"
+        )
         play = Play(song_id=song.id, played_at=played_at)
         play.save(session)
 
     session.close()
+
 
 if __name__ == "__main__":
     main()
