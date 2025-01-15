@@ -34,10 +34,8 @@ session = Session()
 playlist = sp.playlist(PLAYLIST_ID)
 print(f"Playlist: {playlist['name']}")
 
-# Last Sunday at 00:00:00 to this past Sunday at 00:00:00
-end_date = (datetime.now() - timedelta(days=datetime.now().weekday() + 1)).replace(
-    hour=0, minute=0, second=0, microsecond=0
-)
+# The past 7 days
+end_date = datetime.now()
 start_date = end_date - timedelta(weeks=1)
 
 print(f"Getting songs from {start_date} to {end_date}...")

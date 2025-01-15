@@ -17,16 +17,18 @@ class BaseModel(Base):
     id = Column(Integer, primary_key=True)
 
     @classmethod
-    def get_or_create(cls, session, **kwargs):
-        instance = session.query(cls).filter_by(**kwargs).first()
+    def get_or_create(cls, session, spotify_id, **kwargs):
+        # Always filter by the unique identifier
+        instance = session.query(cls).filter_by(spotify_id=spotify_id).first()
         if not instance:
-            instance = cls(**kwargs)
-            instance.save(session)
+            instance = cls(spotify_id=spotify_id, **kwargs)
+            session.add(instance)
+            session.flush()  # flush to make the record visible to subsequent queries
         return instance
 
     def save(self, session):
         session.add(self)
-        session.commit()
+        session.flush()
 
 
 class Album(BaseModel):
@@ -58,3 +60,9 @@ class Play(BaseModel):
     __tablename__ = "play"
     song_id = Column(Integer, ForeignKey("song.id"), nullable=False)
     played_at = Column(DateTime, nullable=False)
+
+class HistoricalPlay(BaseModel):
+    __tablename__ = "historical_play"
+    song_id = Column(Integer, ForeignKey("song.id"), nullable=False)
+    played_at = Column(DateTime, nullable=False)
+    ms_played = Column(Integer, nullable=True)
